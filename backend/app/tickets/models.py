@@ -49,3 +49,19 @@ class Ticket(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from backend.app.core.database import Base
+
+class TicketAIMetadata(Base):
+    __tablename__ = "ticket_ai_metadata"
+
+    id = Column(Integer, primary_key=True)
+    ticket_id = Column(Integer, ForeignKey("tickets.id"), unique=True)
+
+    category = Column(String)
+    priority = Column(String)
+    sentiment = Column(String)
+    confidence = Column(Float)
+    risk = Column(String)
+    ai_summary = Column(String)
