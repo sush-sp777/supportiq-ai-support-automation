@@ -1,10 +1,18 @@
 from backend.app.knowledge_base.faqs import KNOWLEDGE_BASE
 
-def generate_draft_reply(ai_metadata: dict):
-    category = ai_metadata.get("category")
+def generate_draft_reply(ticket_text: str):
+    context = retrieve_context(ticket_text)
 
-    for item in KNOWLEDGE_BASE:
-        if item["category"] == category:
-            return item["answer"]
+    return (
+        "Based on our records:\n\n"
+        f"{context}\n\n"
+        "If you need further help, please let us know."
+    )
 
-    return "Thank you for contacting support. An agent will assist you shortly."
+from backend.app.ai.vector_store import model, index, texts
+
+def retrieve_context(query: str):
+    query_embedding = model.encode([query])
+    distances, indices = index.search(query_embedding, k=1)
+
+    return texts[indices[0][0]]

@@ -19,12 +19,10 @@ def generate_reply(
         raise HTTPException(status_code=403, detail="Not authorized")
 
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
-    if not ticket or not ticket.ai_metadata:
-        raise HTTPException(status_code=404, detail="Ticket or AI metadata not found")
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
 
-    draft = generate_draft_reply({
-        "category": ticket.ai_metadata.category
-    })
+    draft = generate_draft_reply(ticket.description)
 
     return {
         "ticket_id": ticket_id,
