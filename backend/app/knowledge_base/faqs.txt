@@ -1,0 +1,11 @@
+[ACCOUNT]
+Q: How to reset password?
+A: You can reset your password by clicking the "Forgot Password" option on the login page and following instructions.
+
+[BILLING]
+Q: Refund for failed payment
+A: Refunds for failed payments are processed within 3-5 business days.
+
+[TECHNICAL]
+Q: App crashing issue
+A: Please clear cache and reinstall the application. If issue persists, contact support.

@@ -17,7 +17,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         email=user.email,
         password_hash=hash_password(user.password),
-        role=user.role
+        role="USER"
     )
     db.add(new_user)
     db.commit()
@@ -42,7 +42,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         data={"user_id": db_user.id, "role": db_user.role}
     )
 
-    return {"access_token": token}
+    return {
+    "access_token": token,
+    "token_type": "bearer"
+}
 
 from backend.app.auth.dependencies import get_current_user, require_role
 

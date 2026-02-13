@@ -1,18 +1,14 @@
-from backend.app.knowledge_base.faqs import KNOWLEDGE_BASE
-
-def generate_draft_reply(ticket_text: str):
-    context = retrieve_context(ticket_text)
-
-    return (
-        "Based on our records:\n\n"
-        f"{context}\n\n"
-        "If you need further help, please let us know."
-    )
-
 from backend.app.ai.vector_store import model, index, texts
 
-def retrieve_context(query: str):
+def retrieve_context(query: str, k: int = 3):
     query_embedding = model.encode([query])
-    distances, indices = index.search(query_embedding, k=1)
+    distances, indices = index.search(query_embedding, k)
 
-    return texts[indices[0][0]]
+    results = []
+    for i, distance in zip(indices[0], distances[0]):
+        if distance < 1.2:  # threshold tuning
+            results.append(texts[i])
+
+    return "\n\n".join(results)
+
+

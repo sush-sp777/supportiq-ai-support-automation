@@ -4,6 +4,7 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, SystemMessage
 from dotenv import load_dotenv
 load_dotenv()
+import re
 
 # Initialize LLM
 llm = ChatGroq(
@@ -14,40 +15,50 @@ llm = ChatGroq(
 
 
 def run_ai_triage(title: str, description: str):
-    """
-    Uses LLM to analyze ticket and return structured triage metadata.
-    """
 
     system_prompt = """
-You are an AI support triage engine.
+You are an enterprise AI support ticket triage engine.
 
-Analyze the support ticket and respond ONLY in valid JSON.
+Analyze the support ticket and return STRICT valid JSON only.
 
-Return:
+Return this exact structure:
+
 {
   "category": "BILLING | TECHNICAL | ACCOUNT | GENERAL",
   "priority": "LOW | MEDIUM | HIGH | URGENT",
   "sentiment": "POSITIVE | NEUTRAL | NEGATIVE",
-  "confidence": float between 0 and 1,
   "risk": "LOW | MEDIUM | HIGH",
-  "ai_summary": "short 1-line summary"
+  "confidence": float between 0 and 1,
+  "ai_summary": "1 short sentence summary"
 }
 
-Rules:
-- Billing/payment/refund → BILLING
-- Login/password/account access → ACCOUNT
-- System bug/error/crash → TECHNICAL
-- General query → GENERAL
-- Angry/frustrated tone → HIGH risk
-- Calm tone → LOW risk
-Return ONLY JSON. No explanation.
+Classification Rules:
 
-Risk rules:
-- Simple password reset issues → LOW risk
-- Payment disputes with anger → HIGH risk
-- Security breach or fraud → HIGH risk
-- Technical bug without urgency → MEDIUM risk
+Category:
+- Payment, refund, invoice → BILLING
+- Login, password, account access → ACCOUNT
+- Bug, crash, error, system failure → TECHNICAL
+- General info or feature question → GENERAL
 
+Risk:
+- Security breach, fraud, data loss → HIGH
+- Angry customer + billing issue → HIGH
+- Normal bug without urgency → MEDIUM
+- Simple query → LOW
+
+Priority:
+- Urgent words like "immediately", "ASAP", "critical" → URGENT
+- Payment failure or system down → HIGH
+- Normal bug → MEDIUM
+- Question → LOW
+
+Confidence:
+- High clarity issue → 0.8 to 1.0
+- Slight ambiguity → 0.6 to 0.8
+- Unclear issue → below 0.6
+
+Return ONLY JSON.
+Do not explain.
 """
 
     user_prompt = f"""
@@ -60,16 +71,29 @@ Description: {description}
         HumanMessage(content=user_prompt)
     ])
 
+    content = response.content.strip()
+
+    # Safe JSON extraction
+    match = re.search(r"\{.*\}", content, re.DOTALL)
+
+    if not match:
+        return fallback_response()
+
+    json_text = match.group()
+
     try:
-        parsed = json.loads(response.content)
+        parsed = json.loads(json_text)
         return parsed
-    except Exception:
-        # fallback in case model outputs bad JSON
-        return {
-            "category": "GENERAL",
-            "priority": "MEDIUM",
-            "sentiment": "NEUTRAL",
-            "confidence": 0.5,
-            "risk": "LOW",
-            "ai_summary": "AI parsing failed."
-        }
+    except json.JSONDecodeError:
+        return fallback_response()
+
+
+def fallback_response():
+    return {
+        "category": "GENERAL",
+        "priority": "MEDIUM",
+        "sentiment": "NEUTRAL",
+        "risk": "LOW",
+        "confidence": 0.5,
+        "ai_summary": "AI parsing failed."
+    }

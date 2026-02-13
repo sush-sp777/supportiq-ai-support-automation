@@ -5,7 +5,6 @@ from backend.app.tickets.models import TicketCategory, TicketPriority, TicketSta
 class TicketCreate(BaseModel):
     title: str
     description: str
-    category: TicketCategory
 
 from typing import Optional
 
@@ -31,3 +30,7 @@ class TicketResponse(BaseModel):
     ai_metadata: Optional[TicketAIMetadataResponse]
     class Config:
         orm_mode = True
+from pydantic import BaseModel
+
+class TicketReply(BaseModel):
+    message: str
