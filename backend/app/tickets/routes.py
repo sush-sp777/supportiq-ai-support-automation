@@ -153,7 +153,13 @@ def generate_draft_for_agent(
     if current_user.role != "AGENT":
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    ticket = (
+        db.query(Ticket)
+        .options(joinedload(Ticket.ai_metadata))
+        .filter(Ticket.id == ticket_id)
+        .first()
+    )
+
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
@@ -164,7 +170,19 @@ def generate_draft_for_agent(
         .all()
     )
 
-    draft = generate_agent_draft(ticket, messages)
+    if not ticket.ai_metadata:
+        raise HTTPException(status_code=400, detail="AI metadata missing")
+
+    draft = generate_agent_draft(
+        ticket=ticket,
+        messages=messages,
+        ai_metadata={
+            "risk": ticket.ai_metadata.risk,
+            "sentiment": ticket.ai_metadata.sentiment,
+            "confidence": ticket.ai_metadata.confidence,
+            "ai_summary": ticket.ai_metadata.ai_summary
+        }
+    )
 
     logger.info(f"AI DRAFT GENERATED → Ticket {ticket_id}")
 

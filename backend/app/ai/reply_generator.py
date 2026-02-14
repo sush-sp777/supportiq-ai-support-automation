@@ -69,7 +69,7 @@ Write the final customer reply.
     return response.content
 
 
-def generate_agent_draft(ticket, messages):
+def generate_agent_draft(ticket, messages, ai_metadata: dict):
     context = retrieve_context(ticket.description)
 
     conversation_text = "\n".join(
@@ -77,39 +77,60 @@ def generate_agent_draft(ticket, messages):
     )
 
     system_prompt = f"""
-You are an expert support strategist helping a human AGENT.
+You are a senior customer support strategist assisting a HUMAN AGENT.
 
-Ticket Info:
+Ticket Intelligence:
 - Category: {ticket.category}
 - Priority: {ticket.priority}
-- Current Status: {ticket.status}
+- Risk Level: {ai_metadata['risk']}
+- Sentiment: {ai_metadata['sentiment']}
+- AI Confidence: {ai_metadata['confidence']}
+- AI Summary: {ai_metadata['ai_summary']}
 
-Instructions:
+Strategic Rules:
 
-1. Use knowledge base context if relevant.
-2. Analyze full conversation history.
-3. If HIGH priority → be precise and structured.
-4. If BILLING → ensure financial clarity.
-5. If ACCOUNT → provide step-by-step instructions.
-6. If conversation shows frustration → recommend empathetic tone.
+1. Emotional Awareness:
+   - If sentiment is NEGATIVE or FRUSTRATED → begin with empathy.
+   - If customer is calm → remain professional.
 
-Provide:
-- A structured draft reply
-- Clear action steps
+2. Risk Control:
+   - If risk is HIGH → avoid final commitments.
+     Recommend escalation or verification steps.
+   - If risk is LOW → provide clear resolution path.
+
+3. Priority Handling:
+   - HIGH priority → structured, bullet-based response.
+   - LOW priority → concise and simple.
+
+4. Category Guidance:
+   - BILLING → ensure financial clarity and refund explanation.
+   - ACCOUNT → provide step-by-step instructions.
+   - TECHNICAL → troubleshooting sequence.
+
+5. Knowledge Usage:
+   - Use knowledge base context if relevant.
+   - Never invent policies.
+   - If unsure, suggest verification instead of guessing.
+
+Output Requirements:
+- Professional tone
+- Clear structure
+- Actionable next steps
 - No mention of AI
-- Professional and concise
+- Optimized for human agent to send
 """
 
     user_prompt = f"""
 Knowledge Base Context:
 {context}
 
-Ticket Title: {ticket.title}
+Ticket Title:
+{ticket.title}
 
-Conversation:
+Full Conversation History:
 {conversation_text}
 
-Write the best possible draft reply for the AGENT.
+Generate the best strategic draft reply for the AGENT.
 """
 
     response = llm.invoke([
