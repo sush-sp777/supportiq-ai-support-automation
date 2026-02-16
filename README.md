@@ -27,7 +27,7 @@ This ensures automation without losing human control.
 ---
 
 ## 🎯 Key Features
-✅ AI Ticket Triage (Structured Output)
+### ✅ AI Ticket Triage (Structured Output)
 
 - Classifies tickets into categories
 - Assigns priority level
@@ -38,7 +38,7 @@ This ensures automation without losing human control.
 
 The LLM returns structured JSON, making the system reliable and predictable.
 
-✅ Risk-Based Decision Engine
+### ✅ Risk-Based Decision Engine
 
 After AI classification, a rule-based decision engine determines:
 - Low risk + high confidence → Auto resolve
@@ -46,7 +46,7 @@ After AI classification, a rule-based decision engine determines:
 
 This prevents unsafe automation.
 
-✅ Retrieval-Augmented Generation (RAG)
+### ✅ Retrieval-Augmented Generation (RAG)
 
 For auto-resolved tickets:
 
@@ -55,7 +55,7 @@ For auto-resolved tickets:
 - Generates grounded responses
 - Reduces hallucination risk
 
-✅ Human-in-the-Loop Agent Assistance
+### ✅ Human-in-the-Loop Agent Assistance
 
 For escalated tickets:
 
@@ -69,7 +69,7 @@ For escalated tickets:
 
 AI assists — humans stay in control.
 
-✅ Role-Based Authentication
+### ✅ Role-Based Authentication
 
 - JWT-based authentication
 - USER and AGENT roles
@@ -123,13 +123,33 @@ Decision Engine
 ```
 ---
 
+## 📡 API Endpoints
+
+### 🔐 Authentication
+- POST /auth/register  
+- POST /auth/login  
+- GET /auth/me  
+- GET /auth/agent-only  
+
+### 🎫 Tickets
+- POST /tickets/  
+- GET /tickets/my  
+- GET /tickets/agent/pending  
+- POST /tickets/{ticket_id}/generate-draft  
+- POST /tickets/{ticket_id}/reply  
+- GET /tickets/{ticket_id}/messages  
+- POST /tickets/{ticket_id}/close  
+
+---
+
 ## 🔄 Ticket Workflow
-1️⃣ User Creates Ticket
+
+### 1️⃣ User Creates Ticket
 
 - Ticket stored in PostgreSQL
 - AI triage automatically runs
 
-2️⃣ AI Classification
+### 2️⃣ AI Classification
 
 The system extracts:
 - Category
@@ -139,7 +159,7 @@ The system extracts:
 - Confidence
 - Summary
 
-3️⃣ Decision Engine
+### 3️⃣ Decision Engine
 
 If:
 - Confidence ≥ 0.70
@@ -150,7 +170,7 @@ Else:
 
 → Ticket is assigned to agent queue
 
-4️⃣ Agent Handling (If Escalated)
+### 4️⃣ Agent Handling (If Escalated)
 
 - Agent reviews ticket
 - Option to generate AI draft
@@ -160,7 +180,7 @@ Else:
 
 ## 💻 Tech Stack
 
-Backend:
+### Backend:
 
 - FastAPI
 - PostgreSQL
@@ -168,7 +188,7 @@ Backend:
 - JWT Authentication
 - OAuth2
 
-AI Layer:
+### AI Layer:
 
 - Groq API (LLaMA 3.1)
 - LangChain
@@ -176,7 +196,7 @@ AI Layer:
 - FAISS (Vector Search)
 - Structured prompt engineering
 
-Frontend:
+### Frontend:
 
 - Streamlit 
 
@@ -185,10 +205,11 @@ Frontend:
 ## 📂 Project Structure
 
 ```bash
-supportiq/
+supportiq-ai-support-automation/
 │
 ├── backend/
 │   └── app/
+│       ├── main.py
 │       ├── ai/
 │       ├── auth/
 │       ├── users/
@@ -212,8 +233,8 @@ supportiq/
 
 1️⃣ Clone Repository
 ```
-git clone <your_repo_url>
-cd supportiq
+git clone https://github.com/sush-sp777/supportiq-ai-support-automation.git
+cd supportiq-ai-support-automation
 ```
 2️⃣ Create Environment File
 
@@ -229,7 +250,7 @@ pip install -r requirements.txt
 ```
 4️⃣ Run Backend
 ```bash
-uvicorn backend.main:app --reload
+uvicorn backend.app.main:app --reload
 ```
 Backend runs at:
 ```
@@ -243,7 +264,7 @@ streamlit run frontend/app.py
 
 ## 📊 Example Scenarios
 
-🟢 Scenario 1: Low-Risk FAQ Question
+### 🟢 Scenario 1: Low-Risk FAQ Question
 
 User:
 
@@ -257,7 +278,7 @@ AI:
 System:
 → Auto resolves using RAG knowledge base.
 
-🔴 Scenario 2: High-Risk Complaint
+### 🔴 Scenario 2: High-Risk Complaint
 
 User:
 
@@ -300,6 +321,14 @@ This project demonstrates:
 - RAG-based grounding
 
 It reflects production-oriented backend AI engineering.
+
+---
+## 🔮 Future Improvements
+
+- Analytics dashboard (auto-resolution rate, sentiment trends, ticket volume insights)
+- Email integration for automatic ticket ingestion
+- SLA-based dynamic prioritization
+- Admin panel for monitoring AI performance
 
 ---
 
