@@ -202,6 +202,20 @@ Else:
 
 ---
 
+## 🎥 Demo 
+
+https://github.com/user-attachments/assets/330ea0fd-4944-4c94-95a6-19b27ee8a71c
+
+---
+
+## 📸 Screenshots
+
+```scss
+![User Dashboard](./screenshots/user_dashboard.png)
+```
+
+---
+
 ## 📂 Project Structure
 
 ```bash
@@ -329,18 +343,6 @@ It reflects production-oriented backend AI engineering.
 - Email integration for automatic ticket ingestion
 - SLA-based dynamic prioritization
 - Admin panel for monitoring AI performance
-
----
-
-## 📸 Screenshots
-
-```scss
-![User Dashboard](./screenshots/user_dashboard.png)
-```
-
----
-
-## 🎥 Demo 
 
 ---
 
