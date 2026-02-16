@@ -27,5 +27,302 @@ This ensures automation without losing human control.
 ---
 
 ## 🎯 Key Features
-
 ✅ AI Ticket Triage (Structured Output)
+
+- Classifies tickets into categories
+- Assigns priority level
+- Detects sentiment
+- Evaluates risk (LOW / MEDIUM / HIGH)
+- Calculates confidence score
+- Generates a short AI summary
+
+The LLM returns structured JSON, making the system reliable and predictable.
+
+✅ Risk-Based Decision Engine
+
+After AI classification, a rule-based decision engine determines:
+- Low risk + high confidence → Auto resolve
+- Otherwise → Route to human agent
+
+This prevents unsafe automation.
+
+✅ Retrieval-Augmented Generation (RAG)
+
+For auto-resolved tickets:
+
+- Retrieves relevant information from internal knowledge base
+- Uses embeddings + vector search (FAISS)
+- Generates grounded responses
+- Reduces hallucination risk
+
+✅ Human-in-the-Loop Agent Assistance
+
+For escalated tickets:
+
+- Agents can generate AI reply drafts
+- AI uses:
+  - Ticket context
+  - Conversation history
+  - Sentiment
+  - Risk level
+- Agent reviews and sends final response
+
+AI assists — humans stay in control.
+
+✅ Role-Based Authentication
+
+- JWT-based authentication
+- USER and AGENT roles
+- Secure password hashing
+- Protected endpoints
+
+---
+
+## 🏗 System Architecture
+```scss
+User Dashboard
+      ↓
+FastAPI Backend (Auth + Ticket API)
+      ↓
+Ticket Stored in PostgreSQL
+      ↓
+AI Triage (LLM → Structured JSON)
+      ↓
+Extract:
+• Category
+• Priority
+• Sentiment
+• Risk
+• Confidence
+      ↓
+Decision Engine
+      ├── If (Risk = LOW) AND (Confidence ≥ 0.70)
+      │         ↓
+      │     RAG Engine (Vector Search + Context)
+      │         ↓
+      │     LLM Grounded Response
+      │         ↓
+      │     Auto-Resolve Ticket
+      │         ↓
+      │     Save Response to Database
+      │
+      └── Else
+                ↓
+           Route to Agent Queue
+                ↓
+           Agent Dashboard
+                ↓
+           AI Draft Generator
+                ↓
+           Human Review & Edit
+                ↓
+           Final Response Sent
+                ↓
+           Save Response to Database
+
+```
+---
+
+## 🔄 Ticket Workflow
+1️⃣ User Creates Ticket
+
+- Ticket stored in PostgreSQL
+- AI triage automatically runs
+
+2️⃣ AI Classification
+
+The system extracts:
+- Category
+- Priority
+- Sentiment
+- Risk
+- Confidence
+- Summary
+
+3️⃣ Decision Engine
+
+If:
+- Confidence ≥ 0.70
+- Risk = LOW
+→ Ticket is auto-resolved
+
+Else:
+
+→ Ticket is assigned to agent queue
+
+4️⃣ Agent Handling (If Escalated)
+
+- Agent reviews ticket
+- Option to generate AI draft
+- Agent edits and sends final response
+
+---
+
+## 💻 Tech Stack
+
+Backend:
+
+- FastAPI
+- PostgreSQL
+- SQLAlchemy
+- JWT Authentication
+- OAuth2
+
+AI Layer:
+
+- Groq API (LLaMA 3.1)
+- LangChain
+- SentenceTransformers
+- FAISS (Vector Search)
+- Structured prompt engineering
+
+Frontend:
+
+- Streamlit 
+
+---
+
+## 📂 Project Structure
+
+```bash
+supportiq/
+│
+├── backend/
+│   └── app/
+│       ├── ai/
+│       ├── auth/
+│       ├── users/
+│       ├── tickets/
+│       ├── core/
+│       └── knowledge_base/
+│
+├── frontend/
+│   └── app.py
+│
+├── requirements.txt
+├── .env
+├── .gitignore
+├── README.md
+└── LICENSE
+
+```
+---
+
+## ⚙️ Local Setup
+
+1️⃣ Clone Repository
+```
+git clone <your_repo_url>
+cd supportiq
+```
+2️⃣ Create Environment File
+
+Create a .env file:
+```ini
+DATABASE_URL=postgresql://user:password@localhost/dbname
+SECRET_KEY=your_secret_key
+GROQ_API_KEY=your_groq_api_key
+```
+3️⃣ Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+4️⃣ Run Backend
+```bash
+uvicorn backend.main:app --reload
+```
+Backend runs at:
+```
+http://localhost:8000
+```
+5️⃣ Run Frontend
+```bash
+streamlit run frontend/app.py
+```
+---
+
+## 📊 Example Scenarios
+
+🟢 Scenario 1: Low-Risk FAQ Question
+
+User:
+
+"How do I reset my password?"
+
+AI:
+- Category: Account Support
+- Risk: LOW
+- Confidence: 0.92
+
+System:
+→ Auto resolves using RAG knowledge base.
+
+🔴 Scenario 2: High-Risk Complaint
+
+User:
+
+"I was charged twice and this is unacceptable."
+
+AI:
+
+- Risk: HIGH
+- Sentiment: Negative
+- Confidence: 0.75
+
+System:
+→ Routes to human agent.
+
+Agent:
+→ Generates AI draft
+→ Reviews and sends final reply
+
+---
+
+## 🔐 Security & Reliability
+
+- JWT token expiration
+- Password hashing with bcrypt
+- Structured LLM output parsing
+- Fallback handling for invalid AI responses
+- Risk-aware automation limits
+
+---
+
+## 🚀 Why This Project Is Valuable
+
+This project demonstrates:
+
+- Real-world AI system design
+- Safe AI automation (not blind chatbot responses)
+- LLM structured output handling
+- Decision-engine thinking
+- Human-in-the-loop workflows
+- RAG-based grounding
+
+It reflects production-oriented backend AI engineering.
+
+---
+
+## 📸 Screenshots
+
+```scss
+![User Dashboard](./screenshots/user_dashboard.png)
+```
+
+---
+
+## 🎥 Demo 
+
+---
+
+## 👨‍💻 Author
+
+**Sushant Patil**
+
+AI Engineer
+
+🔗 https://github.com/sush-sp777
+
+🔗 https://www.linkedin.com/in/sushant-patil-9a05ab2a4/
+
+---
