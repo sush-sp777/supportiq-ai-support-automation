@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize LLM
 llm = ChatGroq(
-    model="llama-3.1-8b-instant",  # fast + good reasoning
+    model="openai/gpt-oss-20b",  # fast + good reasoning
     groq_api_key=os.getenv("GROQ_API_KEY"),
     temperature=0
 )

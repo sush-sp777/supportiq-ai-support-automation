@@ -190,7 +190,7 @@ Else:
 
 ### AI Layer:
 
-- Groq API (LLaMA 3.1)
+- Groq API (GPT-OSS 20B)
 - LangChain
 - SentenceTransformers
 - FAISS (Vector Search)
